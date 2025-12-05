@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { CanvasInput } from "@/components/CanvasInput"
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -109,7 +109,7 @@ export default function HomePage() {
                 {showError && (
                   <div className="mb-2 p-2 bg-red-600 text-white text-sm rounded">Incorrect username or password</div>
                 )}
-                <CanvasInput
+                <input
                   value={username}
                   onChange={setUsername}
                   className="bg-transparent border border-gray-600 text-white placeholder-gray-400 focus:border-white"
@@ -119,7 +119,7 @@ export default function HomePage() {
 
               <div>
                 <label className="block text-sm mb-2">Password</label>
-                <CanvasInput
+                <input
                   type="password"
                   value={password}
                   onChange={setPassword}
