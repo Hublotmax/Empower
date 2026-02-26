@@ -147,7 +147,17 @@ export function CanvasInput({ value, onChange, type = "text", placeholder = "", 
     setCursorPosition(newCursorPosition)
     setIsFocused(true)
     // Focus the hidden input to trigger mobile keyboard
-    inputRef.current?.focus()
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 0)
+  }
+
+  const handleTouch = () => {
+    setIsFocused(true)
+    // Focus the hidden input to trigger mobile keyboard on touch
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 0)
   }
 
   const handleHiddenInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -163,7 +173,9 @@ export function CanvasInput({ value, onChange, type = "text", placeholder = "", 
   const handleCanvasFocus = () => {
     setIsFocused(true)
     // Focus the hidden input to trigger mobile keyboard
-    inputRef.current?.focus()
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 0)
   }
 
   // Update cursor position when value changes externally
@@ -173,16 +185,6 @@ export function CanvasInput({ value, onChange, type = "text", placeholder = "", 
 
   return (
     <div className="relative w-full">
-      <canvas
-        ref={canvasRef}
-        className={`w-full h-10 cursor-text ${className}`}
-        tabIndex={0}
-        onFocus={handleCanvasFocus}
-        onBlur={() => setIsFocused(false)}
-        onKeyDown={handleKeyDown}
-        onClick={handleClick}
-        style={{ outline: "none" }}
-      />
       <input
         ref={inputRef}
         type={type}
@@ -194,11 +196,22 @@ export function CanvasInput({ value, onChange, type = "text", placeholder = "", 
         style={{
           position: "absolute",
           opacity: 0,
-          pointerEvents: "none",
           width: "100%",
           height: "100%",
+          zIndex: 1,
         }}
-        aria-hidden="false"
+        aria-label={placeholder}
+      />
+      <canvas
+        ref={canvasRef}
+        className={`w-full h-10 cursor-text ${className}`}
+        tabIndex={0}
+        onFocus={handleCanvasFocus}
+        onBlur={() => setIsFocused(false)}
+        onKeyDown={handleKeyDown}
+        onClick={handleClick}
+        onTouchStart={handleTouch}
+        style={{ outline: "none", pointerEvents: "none" }}
       />
     </div>
   )
