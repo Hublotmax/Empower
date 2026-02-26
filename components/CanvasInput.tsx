@@ -14,6 +14,7 @@ interface CanvasInputProps {
 
 export function CanvasInput({ value, onChange, type = "text", placeholder = "", className = "" }: CanvasInputProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [isFocused, setIsFocused] = useState(false)
   const [cursorPosition, setCursorPosition] = useState(0)
   const [showCursor, setShowCursor] = useState(true)
@@ -145,6 +146,24 @@ export function CanvasInput({ value, onChange, type = "text", placeholder = "", 
 
     setCursorPosition(newCursorPosition)
     setIsFocused(true)
+    // Focus the hidden input to trigger mobile keyboard
+    inputRef.current?.focus()
+  }
+
+  const handleHiddenInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.value)
+    setCursorPosition(e.target.value.length)
+  }
+
+  const handleHiddenInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Let the hidden input handle the input naturally
+    setCursorPosition(inputRef.current?.selectionStart || 0)
+  }
+
+  const handleCanvasFocus = () => {
+    setIsFocused(true)
+    // Focus the hidden input to trigger mobile keyboard
+    inputRef.current?.focus()
   }
 
   // Update cursor position when value changes externally
@@ -153,15 +172,34 @@ export function CanvasInput({ value, onChange, type = "text", placeholder = "", 
   }, [value])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={`w-full h-10 cursor-text ${className}`}
-      tabIndex={0}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
-      onKeyDown={handleKeyDown}
-      onClick={handleClick}
-      style={{ outline: "none" }}
-    />
+    <div className="relative w-full">
+      <canvas
+        ref={canvasRef}
+        className={`w-full h-10 cursor-text ${className}`}
+        tabIndex={0}
+        onFocus={handleCanvasFocus}
+        onBlur={() => setIsFocused(false)}
+        onKeyDown={handleKeyDown}
+        onClick={handleClick}
+        style={{ outline: "none" }}
+      />
+      <input
+        ref={inputRef}
+        type={type}
+        value={value}
+        onChange={handleHiddenInputChange}
+        onKeyDown={handleHiddenInputKeyDown}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        style={{
+          position: "absolute",
+          opacity: 0,
+          pointerEvents: "none",
+          width: "100%",
+          height: "100%",
+        }}
+        aria-hidden="false"
+      />
+    </div>
   )
 }
